@@ -85,7 +85,7 @@ def calculateMove():
 def explorer(player, boardList, depth):
 	currentBoard = deepcopy(boardList)
 
-	print "Depth: " + str(depth)
+	#print "Depth: " + str(depth)
 
 	if currentBoard == None:
 		#print "IM HERE"
@@ -98,7 +98,7 @@ def explorer(player, boardList, depth):
 		for i in range(numCols*2):
 			a = [calculateHeuristic(currentBoard[i]) \
 					 for i in range(numCols*2)]
-			print "Heurestic: " + str(a)
+			#print "Heurestic: " + str(a)
 			return max(a) if player == 1 else \
 						min(a)
 	if depth < MAX_DEPTH:
@@ -132,7 +132,7 @@ def pseudoBoardGenerator(player, startingBoard):
 	return pseudoBoardList
 
 
-def calculateHeuristic(pseudoBoardList):
+def calculateHeuristic(pseudoBoard):
 	#DO SOMETHING HERE
 	random.seed(default_timer())
 	return random.randint(-100,100)
@@ -147,6 +147,9 @@ def pieceLocationWeightCalculator():
 # Returns the 1 or 2 if either player won, 0 if there is no win
 # or -1 if the game board is a draw
 def hasWon(pseudoBoard):
+	if pseudoBoard == None:
+		return None
+
 	consecutivePieceCount = 0
 	for player in range(1,3):
 		# Detect a Horizontal Win
@@ -173,7 +176,6 @@ def hasWon(pseudoBoard):
 		largestDimension = numCols if numCols > numRows else numRows
 		# Detect Principal Diagonal Win
 		# Top Half
-		print "Principal Diagonal TOP"
 		for col in range(largestDimension-1, -1, -1):
 			consecutivePieceCount = 0
 			for row in range(largestDimension):
@@ -187,14 +189,14 @@ def hasWon(pseudoBoard):
 				else: 
 					consecutivePieceCount = 0
 				col += 1
-		print "Principal Diagonal BOT"
+		
 		# Bottom Half
 		for row in range(1,largestDimension):
 			consecutivePieceCount = 0
 			for col in range(largestDimension):
 				if col > numCols-1: break
 				if row > numRows-1: break
-				#print str(col) + " " + str(row)
+				
 				if pseudoBoard[row][col] is player:
 					consecutivePieceCount += 1
 					if consecutivePieceCount is nConnect:
@@ -203,7 +205,6 @@ def hasWon(pseudoBoard):
 					consecutivePieceCount = 0
 				row += 1
 
-		print "Non-Principal Diagonal TOP"
 		# Detect Non-Principal Diagonal Win
 		# Top Half
 		for row in range(largestDimension):
@@ -211,7 +212,7 @@ def hasWon(pseudoBoard):
 			for col in range(largestDimension):
 				if col > numCols-1: break
 				if row > numRows-1: break
-				#print str(col) + " " + str(row)
+				
 				if pseudoBoard[row][col] == player:
 					consecutivePieceCount += 1
 					if consecutivePieceCount is nConnect:
@@ -221,7 +222,6 @@ def hasWon(pseudoBoard):
 				row -= 1
 				if row < 0: break
 
-		print "Non-Principal Diagonal BOT"
 		# Bottom Half
 		for row in range(largestDimension):
 			consecutivePieceCount = 0
@@ -230,7 +230,7 @@ def hasWon(pseudoBoard):
 				col += row
 				if col > numCols-1: break
 				if row > numRows-1: break
-				#print str(col) + " " + str(numRows-k)
+				
 				if pseudoBoard[numRows-k][col]:
 					consecutivePieceCount += 1
 					if consecutivePieceCount is nConnect:
@@ -239,6 +239,14 @@ def hasWon(pseudoBoard):
 					consecutivePieceCount = 0
 				k = k+1 if k < numRows else k
 
+		# Calculate if a Draw Took Place
+		consecutivePieceCount = 0
+		for col in range(numCols):
+			if pseudoBoard[0][col]:
+				consecutivePieceCount += 1
+				if consecutivePieceCount == numCols:
+					return 0 # TODO TAKE INTO ACCOUNT POP!!!
+
 
 	return -1
 
@@ -246,16 +254,36 @@ def hasWon(pseudoBoard):
 ################### Main Program ############################
 #############################################################
 setUp()
-start_time = default_timer()
-a = explorer(2, pseudoBoardGenerator(1, globalBoard), 1)
-print a
-print a.index(max(a))
+p = 1
+i = 0
+result = [[0 for col in range(numCols)] \
+		for row in range(numRows)]
 
-while 1:
+while i < 100000:
+	i += 1
+	
+	globalBoard = makeMove(p, random.randint(0,numCols-1), 1, globalBoard) 
+	
+	p = 2 if p is 1 else 1
+	winner = hasWon(globalBoard)
+	#print globalBoard
+	if winner is not -1:
+		for col in range(numCols):
+			for row in range(numRows):
+				if winner is 1:
+					print "1 has Won: " + str(i)
+					result[row][col] += globalBoard[row][col] if globalBoard[row][col] is not 2 else -1  
+				if winner is 2:
+					result[row][col] -= globalBoard[row][col] if globalBoard[row][col] is not 2 else -1 
+		globalBoard = [[0 for col in range(numCols)] \
+			for row in range(numRows)]
+print "RESULT"
+print result
+
 	#print sys.stdin.readline()
-	sys.stdout.write("1 1\n")
-	sys.stdout.flush()
-	sleep(0.5)
+	#sys.stdout.write("1 1\n")
+	#sys.stdout.flush()
+	#sleep(0.5)
 	
 
 
