@@ -2,6 +2,7 @@
 
 import sys
 from time import sleep
+from datetime import datetime
 from copy import deepcopy
 from timeit import default_timer
 import random
@@ -255,30 +256,52 @@ def hasWon(pseudoBoard):
 #############################################################
 setUp()
 p = 1
-i = 0
-result = [[0 for col in range(numCols)] \
-		for row in range(numRows)]
 
-while i < 100000:
-	i += 1
-	
-	globalBoard = makeMove(p, random.randint(0,numCols-1), 1, globalBoard) 
-	
-	p = 2 if p is 1 else 1
-	winner = hasWon(globalBoard)
-	#print globalBoard
-	if winner is not -1:
-		for col in range(numCols):
-			for row in range(numRows):
-				if winner is 1:
-					print "1 has Won: " + str(i)
-					result[row][col] += globalBoard[row][col] if globalBoard[row][col] is not 2 else -1  
-				if winner is 2:
-					result[row][col] -= globalBoard[row][col] if globalBoard[row][col] is not 2 else -1 
-		globalBoard = [[0 for col in range(numCols)] \
-			for row in range(numRows)]
-print "RESULT"
-print result
+f = open("locationWeights.kpa", 'w')
+f.write("Start Of Writing: " + str(datetime.utcnow()) + "\n\n")
+
+for z in range(3,8):
+	nConnect = z
+	for k in range(4,13):
+		for j in range(4,13):
+			numCols = k
+			numRows = j
+
+			result = [[0 for col in range(numCols)] \
+					for row in range(numRows)]
+			globalBoard = [[0 for col in range(numCols)] \
+						for row in range(numRows)]
+
+			i = 0
+
+			startTime = default_timer()
+
+			while i < 100000:
+				i += 1
+				
+				globalBoard = makeMove(p, random.randint(0,numCols-1), 1, globalBoard) 
+				
+				p = 2 if p is 1 else 1
+				winner = hasWon(globalBoard)
+				#print globalBoard
+				if winner is not -1:
+					for col in range(numCols):
+						for row in range(numRows):
+							if winner is 1:
+								result[row][col] += globalBoard[row][col] if globalBoard[row][col] is not 2 else -1  
+							#if winner is 2:
+							#	result[row][col] -= globalBoard[row][col] if globalBoard[row][col] is not 2 else -1 
+					globalBoard = [[0 for col in range(numCols)] \
+						for row in range(numRows)]
+
+			compTime = default_timer() - startTime
+			f.write("Col: " + str(k) + ", Row: " + str(j) + ", nConnect: " \
+				+ str(nConnect) + " CompTime: " + str(compTime) + "\n")
+			f.write(str(result) + "\n\n")
+			print "RESULT: numCols: " + str(numCols) + " numRows: " \
+				+ str(numRows) + " nConnect: " + str(nConnect) + " CompTime: " + str(compTime)
+			print result 
+f.close()
 
 	#print sys.stdin.readline()
 	#sys.stdout.write("1 1\n")
