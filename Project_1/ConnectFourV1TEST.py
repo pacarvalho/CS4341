@@ -289,8 +289,6 @@ array = sys.stdin.readline().split()
 #f.write("IM HERE\n")
 
 while 1:
-	# Start Out Turn
-	start_time = default_timer()
 
 	# Read Data from Serial
 	array = sys.stdin.readline().split()
@@ -302,17 +300,18 @@ while 1:
 		setUp(array)
 		setUpDebugger()
 		f.write("TIME: " + str(miniMaxAllotedTime) + str("\n"))
-		f.write("I Received: " + str(array) + "\n")
 		if playerID == 1:
 			sys.stdout.write(str(numCols/2) + " 1" + "\n")
 			sys.stdout.flush()
 			f.write("First Move: " + str(numCols/2) + " 1" + "\n")
-			globalBoard = makeMove(playerID, numCols/2, 1, globalBoard)
 
 	if len(array) == 2:
 		# Save Other Player Turn
 		globalBoard = makeMove(1 if playerID is 2 else 2, \
 				array[0], array[1], globalBoard)
+		
+		# Start Out Turn
+		start_time = default_timer()
 		
 		listOfBoards = pseudoBoardGenerator(playerID, globalBoard)
 		
