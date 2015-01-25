@@ -4,6 +4,8 @@
 #	Nothing at all...
 #####################################################################
 
+from math import log10
+
 class GamePar:
 	playerID = 0
 	playerTurn = 0
@@ -12,6 +14,7 @@ class GamePar:
 	nConnect = 0
 	timeLimit = 0
 	miniMaxAllotedTime = 0.0
+	maxDepth = 6
 
 	def __init__(self):
 		pass

@@ -3,19 +3,19 @@
 # Deals with the Referee
 #####################################################################
 
-from sys import stdin
-from sys import stdout
+import sys
+import io
 
 class Communication:
-	def __init__:
+	def __init__(self):
 		pass
 
 	def read(self):
-		return stdin.readline().split()
+		return sys.stdin.readline().split()
 
 	def writeMove(self, col, move):
 		self.write(str(col) + " " + str(move))
 
 	def write(self, data):
-		stdout.write(str(data) + "\n")
-		stdout.flush()
+		sys.stdout.write(str(data) + "\n")
+		sys.stdout.flush()

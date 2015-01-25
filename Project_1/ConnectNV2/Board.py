@@ -49,7 +49,7 @@ class Board:
 		return None
 
 	def unmakeMove(self, player, col, move):
-		del(listOfCreation[-1])
+		del(self.listOfCreation[-1])
 		if move is self.DROP:
 			for row in range(self.gamePar.numRows):
 				if self.board[row][col] is not 0:
@@ -57,8 +57,8 @@ class Board:
 					return self
 			return None
 		elif move is self.POP:
-			if self.board[numRows-1][col] is player:
-				for row in range(numRows-1):
+			if self.board[self.gamePar.numRows-1][col] is player:
+				for row in range(self.gamePar.numRows-1):
 					self.board[row][col] = self.board[row+1][col]
 				self.board[self.gamePar.numRows-1][col] = player
 				return self
@@ -69,21 +69,24 @@ class Board:
 		pseudoBoardList = []
 
 		for col in range(self.gamePar.numCols):
-			temp = deepcopy(self.makeMove(1 if self.listOfCreation[-1][0] is 2 else 2, \
-				col,self.DROP))
+			if self.listOfCreation == []:
+				player = self.gamePar.playerTurn
+			else:
+				player = 1 if self.listOfCreation[-1][0] is 2 else 2
+			
+			temp = deepcopy(self.makeMove(player,col,self.DROP))
+			
 			if temp is not None:
 				pseudoBoardList.append(temp)
 				self.unmakeMove(self.listOfCreation[-1][0], col, self.DROP)
 			
 			if self.hasPopped1 is 0 and self.gamePar.playerID is 1:
-				temp = deepcopy(self.makeMove(1 if self.listOfCreation[-1][0] is 2 else 2, \
-					col,self.POP))
+				temp = deepcopy(self.makeMove(player,col,self.POP))
 				if temp is not None:
 					pseudoBoardList.append(temp)
 					self.unmakeMove(self.listOfCreation[-1][0], col, self.POP)
 			elif self.hasPopped2 is 0 and self.gamePar.playerID is 2:
-				temp = deepcopy(self.makeMove(1 if self.listOfCreation[-1][0] is 2 else 2, \
-					col,self.POP))
+				temp = deepcopy(self.makeMove(player,col,self.POP))
 				if temp is not None:
 					pseudoBoardList.append(temp)
 					self.unmakeMove(self.listOfCreation[-1][0], col, self.POP)

@@ -22,42 +22,40 @@ class Game:
 		self.maxDepth = gamePar.maxDepth
 
 	def miniMax(self):
-		startTime = default_timer() # Save Start Time
-		listOfSonsAndValues = []
-		maxV = -inf
-		for son in board.generateMoves():
-			v = minValue(son, -inf, inf)
+		self.depth = 0
+		self.startTime = default_timer() # Save Start Time
+		maxV = -self.inf
+		for son in self.board.generateMoves():
+			v = self.minValue(son, -self.inf, self.inf, 1)
 			if v > maxV:
 				maxV = v
 				favoriteSon = son
 		return favoriteSon.listOfCreation[-1]
 
-	def maxValue(self, state, a, b):
-		if self.isTerminal(state):
+	def maxValue(self, state, a, b, depth):
+		if self.isTerminal(state, depth):
 			return state.calcHeur()
-		v = -inf
-		else:
-			for son in state.generateMoves():
-				v = max(v, minValue(son, a, b))
-				if v >= b: return v
-				a = max(a, v)
-			return v
+		v = -self.inf
+		for son in state.generateMoves():
+			v = max(v, self.minValue(son, a, b, depth+1))
+			if v >= b: return v
+			a = max(a, v)
+		return v
 
-	def minValue(self, state, a, b):
-		if self.isTerminal(state):
+	def minValue(self, state, a, b, depth):
+		if self.isTerminal(state, depth):
 			return state.calcHeur()
-		v = inf
-		else:
-			for son in state.generateMoves():
-				v = min(v, minValue(son, a, b))
-				if v <= a: return v
-				b = min(b, v)
-			return v
+		v = self.inf
+		for son in state.generateMoves():
+			v = min(v, self.maxValue(son, a, b, depth+1))
+			if v <= a: return v
+			b = min(b, v)
+		return v
 
-	def isTerminal(self, state):
-		if default_timer() - startTime > self.gamePar.miniMaxAllotedTime:
+	def isTerminal(self, state, depth):
+		if default_timer() - self.startTime > self.gamePar.miniMaxAllotedTime:
 			return True
-		if len(state.listOfCreation) - len(board.listOfCreation) > self.maxDepth:
+		if depth > self.maxDepth:
 			return True
 		if state.hasWin() is not - 1:
 			return True
