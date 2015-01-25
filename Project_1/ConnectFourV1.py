@@ -95,7 +95,7 @@ def calculateMove():
 # Replaces each board with a list of boards upon expansion
 def explorer(player, boardList, depth):
 	currentBoard = deepcopy(boardList)
-
+	a = 0
 	#print "Depth: " + str(depth)
 
 	if currentBoard == None:
@@ -106,11 +106,11 @@ def explorer(player, boardList, depth):
 	
 	if (default_timer() - start_time) > miniMaxAllotedTime or \
 			depth >= MAX_DEPTH:
-		for i in range(numCols*2):
-			a = [calculateHeuristic(currentBoard[i]) \
-					 for i in range(numCols*2)]
-			#print "Heurestic: " + str(a)
-			return max(a) if player == 1 else min(a)
+			
+		a = [calculateHeuristic(currentBoard[i]) \
+				 for i in range(numCols*2)]
+		#print "Heurestic: " + str(a)
+		return max(a) if player == 1 else min(a)
 	if depth < MAX_DEPTH:
 		temp = [explorer(2 if player==1 else 1, \
 			pseudoBoardGenerator(player, i), depth+1) for i in currentBoard]
@@ -269,11 +269,12 @@ def setUpDebugger():
 	global f
 
 	if playerID == 1:
-		f = open("debugFilePlayer1.txt", 'a')
+		f = open("debugFilePlayer1.txt", 'w')
 	if playerID == 2:
-		f = open("debugFilePlayer2.txt", 'a')
+		f = open("debugFilePlayer2.txt", 'w')
 
 	f.write("Start Of Writing: " + str(datetime.utcnow()) + "\n\n")
+	f.flush()
 
 #############################################################
 ################### Main Program ############################
@@ -303,10 +304,12 @@ while 1:
 		setUpDebugger()
 		f.write("TIME: " + str(miniMaxAllotedTime) + str("\n"))
 		f.write("I Received: " + str(array) + "\n")
+		f.flush()
 		if playerID == 1:
 			sys.stdout.write(str(numCols/2) + " 1" + "\n")
 			sys.stdout.flush()
 			f.write("First Move: " + str(numCols/2) + " 1" + "\n")
+			f.flush()
 			globalBoard = makeMove(playerID, numCols/2, 1, globalBoard)
 
 	if len(array) == 2:
@@ -315,11 +318,15 @@ while 1:
 				array[0], array[1], globalBoard)
 		
 		listOfBoards = pseudoBoardGenerator(playerID, globalBoard)
-		
-		idealMove = explorer(playerID, listOfBoards, 1)
-		f.write("Player: " + str(playerID) + "Explorer: " + str(idealMove) + str("\n"))
 
-		idealMove = idealMove.index(max(idealMove))
+		f.write("List: " + str(listOfBoards) + "\n")
+
+		idealMove = explorer(playerID, listOfBoards, 1)
+		f.write("Player: " + str(playerID) + " Explorer: " + str(idealMove) + str("\n"))
+		f.flush()
+
+		try: idealMove = idealMove.index(max(idealMove))
+		except: pass
 
 		move = DROP
 		col = idealMove/2

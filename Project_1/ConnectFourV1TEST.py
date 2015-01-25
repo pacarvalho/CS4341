@@ -53,7 +53,7 @@ def setUp(gameSetUp):
 	numRows = gameSetUp[0]
 	numCols = gameSetUp[1]
 	nConnect = gameSetUp[2]
-	playerID = gameSetUp[3]
+	playerID = 1 if gameSetUp[3] is 2 else 2
 	timeLimit = gameSetUp[4]
 	miniMaxAllotedTime = 0.0
 	miniMaxAllotedTime = float(timeLimit) * 0.6
@@ -110,7 +110,7 @@ def explorer(player, boardList, depth):
 			a = [calculateHeuristic(currentBoard[i]) \
 					 for i in range(numCols*2)]
 			#print "Heurestic: " + str(a)
-			return max(a) if player == 1 else min(a)
+			return max(a) if player == 1 else min(filter(lambda p: p is not None, a))
 	if depth < MAX_DEPTH:
 		temp = [explorer(2 if player==1 else 1, \
 			pseudoBoardGenerator(player, i), depth+1) for i in currentBoard]
@@ -269,18 +269,19 @@ def setUpDebugger():
 	global f
 
 	if playerID == 1:
-		f = open("debugFilePlayer1.txt", 'a')
+		f = open("debugFilePlayer1.txt", 'w')
 	if playerID == 2:
-		f = open("debugFilePlayer2.txt", 'a')
+		f = open("debugFilePlayer2.txt", 'w')
 
 	f.write("Start Of Writing: " + str(datetime.utcnow()) + "\n\n")
+	f.flush()
 
 #############################################################
 ################### Main Program ############################
 #############################################################
 
 # Print Name
-sys.stdout.write("The Winners\n")
+sys.stdout.write("The Looser\n")
 sys.stdout.flush()
 
 array = sys.stdin.readline().split()
@@ -289,6 +290,8 @@ array = sys.stdin.readline().split()
 #f.write("IM HERE\n")
 
 while 1:
+	# Start Out Turn
+	start_time = default_timer()
 
 	# Read Data from Serial
 	array = sys.stdin.readline().split()
@@ -300,25 +303,29 @@ while 1:
 		setUp(array)
 		setUpDebugger()
 		f.write("TIME: " + str(miniMaxAllotedTime) + str("\n"))
+		f.write("I Received: " + str(array) + "\n")
 		if playerID == 1:
 			sys.stdout.write(str(numCols/2) + " 1" + "\n")
 			sys.stdout.flush()
 			f.write("First Move: " + str(numCols/2) + " 1" + "\n")
+			globalBoard = makeMove(playerID, numCols/2, 1, globalBoard)
+		f.flush()
 
 	if len(array) == 2:
 		# Save Other Player Turn
 		globalBoard = makeMove(1 if playerID is 2 else 2, \
 				array[0], array[1], globalBoard)
 		
-		# Start Out Turn
-		start_time = default_timer()
-		
 		listOfBoards = pseudoBoardGenerator(playerID, globalBoard)
 		
+		f.write("List: " + str(listOfBoards) + "\n")
+
 		idealMove = explorer(playerID, listOfBoards, 1)
 		f.write("Player: " + str(playerID) + "Explorer: " + str(idealMove) + str("\n"))
+		f.flush()
 
-		idealMove = idealMove.index(max(idealMove))
+		try: idealMove = idealMove.index(max(idealMove))
+		except: pass
 
 		move = DROP
 		col = idealMove/2
