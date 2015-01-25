@@ -131,7 +131,6 @@ class Board:
 				for row in range(largestDimension):
 					if row > numRows-1: break
 					if col > numCols-1: break
-					#print str(col) + " " + str(row)
 					if self.board[row][col] is player:
 						consecutivePieceCount += 1
 						if consecutivePieceCount is nConnect:

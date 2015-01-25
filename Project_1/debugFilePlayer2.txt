@@ -1,0 +1,4 @@
+Start Of Writing: 2015-01-25 10:30:18.838383
+
+TIME: 0.6
+I Received: [6, 7, 3, 2, 1]
