@@ -298,7 +298,6 @@ while 1:
 	#f.write(str(array) + "\n")
 	array = [int(temp) for temp in array]
 	
-
 	if len(array) == 5:
 		setUp(array)
 		setUpDebugger()

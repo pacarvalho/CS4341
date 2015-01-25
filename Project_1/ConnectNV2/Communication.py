@@ -11,7 +11,7 @@ class Communication:
 		pass
 
 	def read(self):
-		return stdin.readline()
+		return stdin.readline().split()
 
 	def writeMove(self, col, move):
 		self.write(str(col) + " " + str(move))

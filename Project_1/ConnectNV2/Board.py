@@ -27,7 +27,7 @@ class Board:
 
 
 	def calcHeur(self):
-		pass
+		return 1
 
 	# Performs the given move with the class
 	def makeMove(self, player, col, move):
@@ -69,21 +69,24 @@ class Board:
 		pseudoBoardList = []
 
 		for col in range(self.gamePar.numCols):
-			temp = deepcopy(self.makeMove(player,col,self.DROP))
+			temp = deepcopy(self.makeMove(1 if self.listOfCreation[-1][0] is 2 else 2, \
+				col,self.DROP))
 			if temp is not None:
 				pseudoBoardList.append(temp)
-				self.unmakeMove(player, col, self.DROP)
+				self.unmakeMove(self.listOfCreation[-1][0], col, self.DROP)
 			
 			if self.hasPopped1 is 0 and self.gamePar.playerID is 1:
-				temp = deepcopy(self.makeMove(player,col,self.POP))
+				temp = deepcopy(self.makeMove(1 if self.listOfCreation[-1][0] is 2 else 2, \
+					col,self.POP))
 				if temp is not None:
 					pseudoBoardList.append(temp)
-					self.unmakeMove(player, col, self.POP)
+					self.unmakeMove(self.listOfCreation[-1][0], col, self.POP)
 			elif self.hasPopped2 is 0 and self.gamePar.playerID is 2:
-				temp = deepcopy(self.makeMove(player,col,self.POP))
+				temp = deepcopy(self.makeMove(1 if self.listOfCreation[-1][0] is 2 else 2, \
+					col,self.POP))
 				if temp is not None:
 					pseudoBoardList.append(temp)
-					self.unmakeMove(player, col, self.POP)
+					self.unmakeMove(self.listOfCreation[-1][0], col, self.POP)
 
 		#pseudoBoardList = filter(lambda a: a is not None, pseudoBoardList)
 
