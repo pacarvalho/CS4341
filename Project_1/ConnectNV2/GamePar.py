@@ -14,7 +14,7 @@ class GamePar:
 	nConnect = 0
 	timeLimit = 0
 	miniMaxAllotedTime = 0.0
-	maxDepth = 6
+	maxDepth = 8
 
 	def __init__(self):
 		pass
@@ -25,4 +25,5 @@ class GamePar:
 		self.nConnect = array[2]
 		self.playerTurn = array[3]
 		self.timeLimit = array[4]
-		self.miniMaxAllotedTime = self.timeLimit * 0.7
+		self.miniMaxAllotedTime = self.timeLimit * 0.85
+		#self.maxDepth = 6 # TODO IMPROVE!!

@@ -13,9 +13,9 @@ class Board:
 	# Class Variables
 	gamePar = 0
 	board = [] # Stores the actual board
+	listOfCreation = []
 	hasPopped1 = 0
 	hasPopped2 = 0
-	listOfCreation = []
 
 	# Type of Moves
 	POP = 0
@@ -25,10 +25,20 @@ class Board:
 		self.gamePar = gamePar
 		self.board = [[0 for col in range(self.gamePar.numCols)] \
 			for row in range(self.gamePar.numRows)]
+		self.listOfCreation = []
+		self.hasPopped1 = 0
+		self.hasPopped2 = 0
+		self.POP = 0
+		self.DROP = 1
 
 
 	def calcHeur(self):
-		return randint(-5,5)
+		temp = self.hasWin()
+		if temp == self.gamePar.playerID:
+			return 1000
+		if temp == -1:
+			return randint(-100,100)
+		return -1000
 
 	# Performs the given move with the class
 	def makeMove(self, player, col, move):
@@ -49,7 +59,8 @@ class Board:
 			return None
 		return None
 
-	def unmakeMove(self, player, col, move):
+	def unmakeMove(self):
+		[player, col, move] = deepcopy(self.listOfCreation[-1])
 		del(self.listOfCreation[-1])
 		if move is self.DROP:
 			for row in range(self.gamePar.numRows):
@@ -58,45 +69,40 @@ class Board:
 					return self
 			return None
 		elif move is self.POP:
-			if self.board[self.gamePar.numRows-1][col] is player:
-				for row in range(self.gamePar.numRows-1):
-					self.board[row][col] = self.board[row+1][col]
-				self.board[self.gamePar.numRows-1][col] = player
-				return self
-			return None
+			for row in range(self.gamePar.numRows-1):
+				self.board[row][col] = self.board[row+1][col]
+			self.board[self.gamePar.numRows-1][col] = player
+			return self
 		return None
 
 	def generateMoves(self):
 		pseudoBoardList = []
 
 		for col in range(self.gamePar.numCols):
-			#if self.listOfCreation == []:
-			#	player = self.gamePar.playerTurn
-			#else:
+
 			player = 1 if self.listOfCreation[-1][0] is 2 else 2
 			
 			temp = deepcopy(self.makeMove(player,col,self.DROP))
 			
 			if temp is not None:
-				print "INVALID MODE"
 				pseudoBoardList.append(temp)
-				self.unmakeMove(self.listOfCreation[-1][0], col, self.DROP)
+				self.unmakeMove()
 			
 			if self.hasPopped1 is 0 and self.gamePar.playerID is 1:
 				temp = deepcopy(self.makeMove(player,col,self.POP))
 				if temp is not None:
 					pseudoBoardList.append(temp)
-					self.unmakeMove(self.listOfCreation[-1][0], col, self.POP)
+					self.unmakeMove()
+					self.hasPopped1 = 1
+
 			elif self.hasPopped2 is 0 and self.gamePar.playerID is 2:
 				temp = deepcopy(self.makeMove(player,col,self.POP))
 				if temp is not None:
 					pseudoBoardList.append(temp)
-					self.unmakeMove(self.listOfCreation[-1][0], col, self.POP)
+					self.unmakeMove()
+					self.hasPopped2 = 1
 
 		#pseudoBoardList = filter(lambda a: a is not None, pseudoBoardList)
-		#print "PSEUDO BOARD LIST"
-		#print [a.board for a in pseudoBoardList]
-		#print [a.listOfCreation for a in pseudoBoardList]
 		return pseudoBoardList
 
 	def hasWin(self):

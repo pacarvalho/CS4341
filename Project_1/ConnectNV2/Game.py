@@ -5,6 +5,7 @@
 #	SetUp
 #####################################################################
 from timeit import default_timer
+from copy import deepcopy
 
 class Game:
 	# Define Constants
@@ -29,7 +30,7 @@ class Game:
 			v = self.minValue(son, -self.inf, self.inf, 1)
 			if v > maxV:
 				maxV = v
-				favoriteSon = son
+				favoriteSon = deepcopy(son)
 		return favoriteSon.listOfCreation[-1]
 
 	def maxValue(self, state, a, b, depth):

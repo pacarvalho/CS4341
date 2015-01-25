@@ -21,3 +21,7 @@ class Communication:
 	def write(self, data):
 		sys.stdout.write(str(data) + "\n")
 		sys.stdout.flush()
+
+	def close(self):
+		sys.stdout.close()
+		sys.stdin.close()
