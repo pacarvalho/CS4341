@@ -7,6 +7,7 @@
 #	hasWin()
 #####################################################################
 from copy import deepcopy
+from random import randint
 
 class Board:
 	# Class Variables
@@ -27,7 +28,7 @@ class Board:
 
 
 	def calcHeur(self):
-		return 1
+		return randint(-5,5)
 
 	# Performs the given move with the class
 	def makeMove(self, player, col, move):
@@ -69,14 +70,15 @@ class Board:
 		pseudoBoardList = []
 
 		for col in range(self.gamePar.numCols):
-			if self.listOfCreation == []:
-				player = self.gamePar.playerTurn
-			else:
-				player = 1 if self.listOfCreation[-1][0] is 2 else 2
+			#if self.listOfCreation == []:
+			#	player = self.gamePar.playerTurn
+			#else:
+			player = 1 if self.listOfCreation[-1][0] is 2 else 2
 			
 			temp = deepcopy(self.makeMove(player,col,self.DROP))
 			
 			if temp is not None:
+				print "INVALID MODE"
 				pseudoBoardList.append(temp)
 				self.unmakeMove(self.listOfCreation[-1][0], col, self.DROP)
 			
@@ -92,7 +94,9 @@ class Board:
 					self.unmakeMove(self.listOfCreation[-1][0], col, self.POP)
 
 		#pseudoBoardList = filter(lambda a: a is not None, pseudoBoardList)
-
+		#print "PSEUDO BOARD LIST"
+		#print [a.board for a in pseudoBoardList]
+		#print [a.listOfCreation for a in pseudoBoardList]
 		return pseudoBoardList
 
 	def hasWin(self):
