@@ -33,24 +33,26 @@ class Board:
 
 
 	def calcHeur(self):
-		inf = float("inf")
 		value = 0
 		# 1) Take wins, cut loses
 		# Take win
 		temp = self.hasWin() # Player who won (1,2) or 0 for draw else -1
 		
 		if temp == self.gamePar.playerID: 
-			value += inf # Victory is best move
+			value += self.gamePar.KWin # Victory is best move
 
 		# Cut Lose
 		if temp == (1 if self.gamePar.playerID is 2 else 2):
-			value -= inf # Loosing is worst move
+			value -= self.gamePar.KLose # Loosing is worst move
 
 		# Notice that Draws are not accounted for... TODO
 		
 		# 2) Take into account location values on board
 		value += self.gamePar.KLocation * self.calcLocationWeights()
-	
+		
+		# 3) Take into account neighbors
+		value += self.gamePar.KNeighbor * self.calculateNeighborWeights()
+
 		return value
 	
 	# Assigns a utility value for the given board based on
@@ -72,6 +74,62 @@ class Board:
 					locationValueOfBoard -= self.gamePar.locationWeightMatrix[row][col]
 
 		return locationValueOfBoard
+
+	def calculateNeighborWeights(self):
+		player = self.gamePar.playerID
+
+		value = [[0 for col in range(self.gamePar.numCols)] \
+			for row in range(self.gamePar.numRows)]
+
+		for row in range(self.gamePar.numRows):
+			for col in range(self.gamePar.numCols):
+				for k in range(1,self.gamePar.neighborRadius+1):
+					try:
+						if self.board[row+k][col+k]: 
+							value[row][col] += 1 if self.board[row+k][col+k] is player else -1
+					except:
+						pass
+					try:
+						if self.board[row-k if row-k>-1 else 100][col+k]:
+							value[row][col] += 1 if self.board[row-k if row-k>-1 else 100][col+k] is player else -1
+					except:
+						pass
+					try:
+						if self.board[row+k][col-k if col-k>-1 else 100]:
+							value[row][col] += 1 if self.board[row+k][col-k if col-k>-1 else 100] is player else -1
+					except:
+						pass
+					try:
+						if self.board[row-k if row-k>-1 else 100][col-k if col-k>-1 else 100]:
+							value[row][col] += 1 if self.board[row-k if row-k>-1 else 100][col-k if col-k>-1 else 100] is player else -1
+					except:
+						pass
+					try:
+						if self.board[row][col+k]:
+							value[row][col] += 1 if self.board[row][col+k] is player else -1
+					except:
+						pass
+					try:
+						if self.board[row][col-k if col-k>-1 else 100]:
+							value[row][col] += 1 if self.board[row][col-k if col-k>-1 else 100] is player else -1
+					except:
+						pass
+					try:
+						if self.board[row-k if row-k>-1 else 100][col]:
+							value[row][col] += 1 if self.board[row-k if row-k>-1 else 100][col] is player else -1
+					except:
+						pass
+					try:
+						if self.board[row+k][col]:
+							value[row][col] += 1 if self.board[row+k][col] is player else -1
+					except:
+						pass
+
+		finalValue = 0
+		for row in range (self.gamePar.numRows):
+			for col in range(self.gamePar.numCols):
+				finalValue += value[row][col]
+		return finalValue
 					
 	# Performs the given move with the class
 	def makeMove(self, player, col, move):
