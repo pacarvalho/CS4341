@@ -33,13 +33,46 @@ class Board:
 
 
 	def calcHeur(self):
-		temp = self.hasWin()
-		if temp == self.gamePar.playerID:
-			return 1000
-		if temp == -1:
-			return randint(-100,100)
-		return -1000
+		inf = float("inf")
+		value = 0
+		# 1) Take wins, cut loses
+		# Take win
+		temp = self.hasWin() # Player who won (1,2) or 0 for draw else -1
+		
+		if temp == self.gamePar.playerID: 
+			value += inf # Victory is best move
 
+		# Cut Lose
+		if temp == (1 if self.gamePar.playerID is 2 else 2):
+			value -= inf # Loosing is worst move
+
+		# Notice that Draws are not accounted for... TODO
+		
+		# 2) Take into account location values on board
+		value += self.gamePar.KLocation * self.calcLocationWeights()
+	
+		return value
+	
+	# Assigns a utility value for the given board based on
+	# The sum of the location weights of each piece on the board
+	def calcLocationWeights(self):
+		# For Safety: In case matrix is not imported correcly
+		if self.gamePar.locationWeightMatrix == []:
+			return 0
+
+		locationValueOfBoard = 0
+
+		otherPlayer = 1 if self.gamePar.playerID == 2 else 2
+
+		for col in range(self.gamePar.numCols):
+			for row in range(self.gamePar.numRows):
+				if self.board[row][col] == self.gamePar.playerID:
+					locationValueOfBoard += self.gamePar.locationWeightMatrix[row][col]
+				elif self.board[row][col] == otherPlayer:
+					locationValueOfBoard -= self.gamePar.locationWeightMatrix[row][col]
+
+		return locationValueOfBoard
+					
 	# Performs the given move with the class
 	def makeMove(self, player, col, move):
 		if move is self.DROP:

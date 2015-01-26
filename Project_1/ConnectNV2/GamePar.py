@@ -5,6 +5,9 @@
 #####################################################################
 
 from math import log10
+from ast import literal_eval
+from copy import deepcopy
+from LocationWeights import allWeights
 
 class GamePar:
 	playerID = 0
@@ -15,6 +18,10 @@ class GamePar:
 	timeLimit = 0
 	miniMaxAllotedTime = 0.0
 	maxDepth = 8
+	locationWeightMatrix = []
+
+	# Constants for Calculating Heuristic
+	KLocation = 0.1
 
 	def __init__(self):
 		pass
@@ -27,3 +34,13 @@ class GamePar:
 		self.timeLimit = array[4]
 		self.miniMaxAllotedTime = self.timeLimit * 0.85
 		#self.maxDepth = 6 # TODO IMPROVE!!
+		if self.numRows > 12 or self.numCols > 12 or self.nConnect > 7 \
+			or self.numRows < 4 or self.numCols < 4 or self.nConnect < 3:
+			self.locationWeightMatrix = [[0 for col in range(self.numCols)] \
+			for row in range(self.numRows)]
+		else:
+			self.locationWeightMatrix = \
+				allWeights[(self.numRows-4) + 9*(self.numCols-4) + 81*(self.nConnect-3)]
+
+
+		
