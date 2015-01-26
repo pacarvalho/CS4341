@@ -22,7 +22,7 @@ class GamePar:
 
 	# Constants for Calculating Heuristic
 	# PAG The Winner
-	KLocation = 50
+	KLocation = 500
 	KNeighbor = 1000
 	KWin = 10000000
 	KLose = 0
