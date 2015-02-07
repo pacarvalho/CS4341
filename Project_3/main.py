@@ -1,12 +1,18 @@
+#!/usr/bin/env python
+
 from Importer import *
 from Exporter import *
 from Analyzer import *
+import sys
 
 # Take Files Given By User
-# TODO!!!
+dataSetFileName = sys.argv[1]
+outputFileName = sys.argv[2]
+
+print sys.argv
 
 # Import the Training Data Set and Parse It
-trainFile = Importer("trainDataSet.csv")
+trainFile = Importer(dataSetFileName)
 boards = trainFile.parser()
 
 # Analyze All Boards
@@ -16,8 +22,8 @@ for i in range(1000):
 	results.append(analyzer.analyze())
 
 # Save to God File
-print results
-exporter = Exporter("trainDataSet.csv", "trainDataSetResults.csv")
+exporter = Exporter(dataSetFileName, outputFileName)
 exporter.write(results)
+print "I am done :)"
 
 
