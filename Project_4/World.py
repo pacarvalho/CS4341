@@ -12,12 +12,13 @@ class World:
 	binE = {} # Binary Equals Constraints
 	binNE = {} # Binary NOT Equals Constraints
 	binS = {} # Binary Simultaneuous NOT
+	capacity = 0 # Minimum filling of the bag
 
-	assignment = {} # Saves the current assignment!!!
+	assignment = {} # Assignment Dictionary ITEM IS KEY
 
 	# Constructor
-	def __init__(self):
-		pass
+	def __init__(self, capacity):
+		self.capacity = capacity
 
 	##### Adder Methods ####
 	def addVar(self, var, x):
@@ -47,28 +48,64 @@ class World:
 	##### Validation Methods #####
 	# Returns if the world is valid. Fulffils all constraints
 	def isValid(self):
-		return self.checkLimits() and self.checkUnaryI() and \
+		return self.checkTopLimit() and self.checkUnaryI() and \
 			self.checkUnaryE() and self.checkBinE() and \
 			self.checkBinNE() and self.checkBinS()
 
+	# Check that the bags have the minimum filling required
+	def checkCapacity(self):
+		pass
+
 	# Checks if the limits have been obeyed
-	def checkLimits(self):
-		for value in self.assignment:
-			length = len(self.assignment[value])
-			if length > self.limits[1] or length < self.limits[0]:
-				return False
+	def checkTopLimit(self):
+		check = {}
+
+		if not self.assignment.keys(): # If empty
+			return True
+
+		for var in self.assignment:
+			if self.assignment[var] in check:
+				check[self.assignment[var]] += 1
+			else:
+				check[self.assignment[var]] = 1
+
+		if max(check.values()) > self.limits[1]:
+			return False
+		return True
+
+	# Checks if the bottom limit has been obeyed
+	def checkBottomLimit(self):
+		check = {}
+
+		if not self.assignment.keys(): # If empty
+			return False
+
+		for var in self.assignment:
+			if self.assignment[var] in check:
+				check[self.assignment[var]] += 1
+			else:
+				check[self.assignment[var]] = 1
+
+		if len(check.values()) is not len(self.values.keys()):
+			return False # A bag has remained unassigned!
+
+		if min(check.values()) < self.limits[0]:
+			return False
 		return True
 
 	# Checks if Unary Inclusion Constraint is not violated
 	def checkUnaryI(self):
-		pass
-		
+		for var in self.unaryI:
+			if var in self.assignment.keys():
+				if self.assignment[var] not in self.unaryI[var]:
+					return False
+		return True
 
 	# Checks if Unary Exclusion Constraint is not violated
 	def checkUnaryE(self):
-		for value in self.assignment:
-			for var in self.unaryE:
-				if value in self.unaryE[var]:
+		for var in self.unaryE:
+			if var in self.assignment.keys():
+				if self.assignment[var] in self.unaryE[var]:
 					return False
 		return True
 
@@ -78,18 +115,11 @@ class World:
 
 	# Checks if the binary inequality has been violated
 	def checkBinNE(self):
-		for value in self.assignment:
-			for var in self.assignment[value]:
-				if var in self.binNE.keys():
-					if self.binNE[var] in self.assignment[value].index():
-						return False
 		return True
 
 	# Checks if the binary mutua exclusivity has been violated
 	def checkBinS(self):
-		pass
-
-
+		return True
 
 	# Logs all variables for debugging
 	def logAll(self):
