@@ -5,18 +5,27 @@
 
 from Parser import Parser
 from World import World
+from CSP import CSP
+from Printer import Printer
 import sys
-
-# Create World Class
-world = World()
 
 # Get User Input from Terminal
 inputFileName = sys.argv[1]
+outputFileName = sys.argv[2]
+
+# Create Classes
+world = World(90)
+csp = CSP()
 
 # Read the input file
 parser = Parser(inputFileName, world)
 parser.read() 
 
-# Print Output from World FOR DEBUGGING
-world.logAll()
+# PERFORM CSP CALCULATION!!!
+result = csp.backtrackSearch(world)
+
+# Print Final Result
+printer = Printer(outputFileName)
+printer.write(result)
+
 
