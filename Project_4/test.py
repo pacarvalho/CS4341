@@ -13,7 +13,7 @@ w.addVar('C', 30)
 w.addVar('D', 70)
 w.addVar('E', 40)
 
-w.addValue('q', 38)
+w.addValue('q', 95)
 w.addValue('r', 70)
 w.addValue('s', 40)
 
@@ -39,12 +39,14 @@ w.addAssignment('C', 'q')
 w.addAssignment('D', 'r')
 w.addAssignment('E', 's')
 assert w.checkMinCapacity(), 'MinCapacity Should have passed'
-assert not w.checkMaxCapacity(), 'MaxCapacity Should have Failed'
+assert w.checkMaxCapacity(), 'MaxCapacity Should have passed'
 assert w.checkUnaryI(), 'UnaryI Fail at First Round of Assignment'
 assert w.checkUnaryE(), 'UnaryE Fail at First Round of Assignment'
 assert w.checkBinE(), 'BinE Fail at First Round of Assignment'
 assert w.checkBinNE(), 'BinNE Fail at First Round of Assignment'
 assert w.checkBinS(), 'BinS Fail at First Round of Assignment'
+assert w.isValid(), 'Output is Valid!'
+assert w.isComplete(), 'Output is Complete'
 # Remove Assignment and add Conlicting Ones
 # Remove
 w.removeAssignment('A')

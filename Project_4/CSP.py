@@ -15,10 +15,14 @@ class CSP:
 	# Recursive portion of algorithm
 	def backtrack(self, w):
 		world = deepcopy(w)
+
 		if world.isComplete():
 			return world
 
 		var = world.selectUnassignedVariable()
+
+		if var not in world.var:
+			return world
 
 		for value in world.orderDomainValues():
 			world.addAssignment(var, value)
@@ -34,5 +38,9 @@ class CSP:
 			world.removeAssignment(var)
 			for iVar,iValue in inferences:
 				world.removeAssignment(iVar, iValue)
+			world.resetFailFlag() # Rests the fail flag
 
 		return world.failFlag()
+
+
+

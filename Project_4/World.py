@@ -45,7 +45,7 @@ class World:
 		self.value[value] = int(x)
 
 	def addLimits(self, low, high):
-		self.limits = [low,high]
+		self.limits = [int(low),int(high)]
 
 	def addUnaryI(self, var, values):
 		self.unaryI[var] = values
@@ -78,6 +78,10 @@ class World:
 		self.fFlag = True
 		return self
 
+	# Unsets the fail flag
+	def resetFailFlag(self):
+		self.fFlag = False
+
 	#######################################################
 	################# Validation Methods ##################
 	#######################################################
@@ -106,6 +110,11 @@ class World:
 	def isComplete(self):
 		return self.isValid() and self.checkMinCapacity() and \
 			self.checkBottomLimit()
+
+	# Returns an integer value of the unused capacity
+	def calcTotalUnusedCapacity(self):
+		totalCapacity = sum(self.value.values())
+		return totalCapacity-sum(self.calcUsedCapacity().values())
 
 	# Calculates the weight of var current in value
 	def calcUsedCapacity(self):
@@ -319,7 +328,7 @@ class World:
 		if not self.MinimumRemainingValue: # Bypass for Testing
 			return unassigned.keys()[0]
 
-		tempMaxVar = 0
+		tempMaxVar = -float('infinity')
 		tempMaxCount = -1
 
 		constraints = self.countVarConstraints()

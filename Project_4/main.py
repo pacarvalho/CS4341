@@ -12,7 +12,7 @@ import sys
 # Get User Input from Terminal
 inputFileName = sys.argv[1]
 outputFileName = sys.argv[2]
-minCapacityConstraint = sys.argv[3]
+minCapacityConstraint = int(sys.argv[3])
 
 # Create Classes
 world = World(minCapacityConstraint)
@@ -30,6 +30,8 @@ if not result.isComplete():
 	print "Assignment not possible..."
 else:
 	print "Finished Assignment!"
+print "Assigned: " + str(result.assignment)
+print "Unused Capacity: " + str(result.calcTotalUnusedCapacity())
 
 # Print Final Result
 printer = Printer(outputFileName)
