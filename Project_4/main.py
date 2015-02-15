@@ -31,7 +31,8 @@ if not result.isComplete():
 else:
 	print "Finished Assignment!"
 print "Assigned: " + str(result.assignment)
-print "Unused Capacity: " + str(result.calcTotalUnusedCapacity())
+print "With unused capacity of: " + str(result.calcTotalUnusedCapacity())
+print "In " + str(csp.counter) + " iterations."
 
 # Print Final Result
 printer = Printer(outputFileName)

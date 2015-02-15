@@ -21,9 +21,9 @@ class World:
 	fFlag = False # Fail Flag!
 
 	###### WEIGHTS!!
-	binWeightE = 5 # Weight for a Binary Constraint when Counting
-	binWeightNE = 5 # Weight for a Binary Constraint when Counting
-	binWeightS = 5 # Weight for a Binary Constraint when Counting
+	binWeightE = 1 # Weight for a Binary Constraint when Counting
+	binWeightNE = 1 # Weight for a Binary Constraint when Counting
+	binWeightS = 1 # Weight for a Binary Constraint when Counting
 
 	###### TESTING CONDITION!!
 	leastConstrainingValue = True
@@ -273,7 +273,7 @@ class World:
 		for var in self.var:
 			tempCount = 0
 			if var in self.unaryI.keys():
-				tempCount -= len(self.unaryI[var])
+				tempCount += len(self.unaryI[var])
 			if var in self.unaryE.keys():
 				tempCount += len(self.unaryE[var])
 			if var in self.binE.keys() or var in self.binE.values():
@@ -288,34 +288,50 @@ class World:
 	# Counts Constraints per Value
 	# Returns dicionary of values and num constraints
 	def countValueConstraints(self):
+		KWeight = len(self.value) # Weight of constraint in terms of total values
+
 		count = {}
+		unusedWeight = {}
+
+		usedWeight = self.calcUsedCapacity()
+		for value in self.value:
+			if value in usedWeight:
+				unusedWeight[value] = self.value[value] - usedWeight[value]
+			else:
+				unusedWeight[value] = self.value[value]
+
+		unusedWeight = sorted(unusedWeight.items(), key=operator.itemgetter(1), \
+			reverse=True)	
+
 		for value in self.value:
 			tempCount = 0
 			if value in self.unaryI.values():
 				for instance in self.unaryI.values():
 					if instance is value:
-						tempCount -= 1
+						tempCount += KWeight
 
 			if value in self.unaryE.values():
 				for instance in self.unaryI.values():
 					if instance is value:
-						tempCount += 1
+						tempCount += KWeight
 
 			if value in self.assignment.values():
 				for var in self.assignment.keys():
 					if var in self.binE:
 						if self.assignment[var] is value:
 							if self.binE[var] not in self.assignment:
-								tempCount += 1
+								tempCount += KWeight
 
 					if var in self.binNE:
 						if self.assignment[var] is value:
 							if self.binNE[var] not in self.assignment:
-								tempCount += 1
+								tempCount += KWeight
 
-			# TODO: Add BinS Constraint
 
 			count[value] = tempCount
+
+		for value,weight in unusedWeight: # Capacity Constraint
+			count[value] += unusedWeight.index((value,weight))
 
 		return count
 
@@ -326,7 +342,9 @@ class World:
 		unassigned = self.findUnassignedVar()
 
 		if not self.MinimumRemainingValue: # Bypass for Testing
-			return unassigned.keys()[0]
+			if not unassigned:
+				return -float('infinity')
+			return unassigned[0]
 
 		tempMaxVar = -float('infinity')
 		tempMaxCount = -1
@@ -359,9 +377,20 @@ class World:
 
 		return order
 
-	# Forward Checking
+	# Forward Checking (Arc Consistency)
 	def inference(self, var, value):
-		return [] # TODO
+		if not self.forwardChecking: # Bypass for testing!
+			return []
+
+		inferences = []
+
+		if var in self.binE: # Binary Equality!
+			inferences += [(self.binE[var], value)]
+		if var in self.binE.values():
+			for var2 in self.binE:
+				if self.binE[var2] is var:
+					inferences += [(var2, value)]
+		return inferences
 
 
 

@@ -4,6 +4,9 @@
 from copy import deepcopy
 
 class CSP:
+	# Declare Variables
+	counter = 0 # Keeps track of number of calls
+
 	# Constructor
 	def __init__(self):
 		pass
@@ -14,6 +17,8 @@ class CSP:
 
 	# Recursive portion of algorithm
 	def backtrack(self, w):
+		self.counter += 1 # Count!
+
 		world = deepcopy(w)
 
 		if world.isComplete():
@@ -37,7 +42,7 @@ class CSP:
 
 			world.removeAssignment(var)
 			for iVar,iValue in inferences:
-				world.removeAssignment(iVar, iValue)
+				world.removeAssignment(iVar)
 			world.resetFailFlag() # Rests the fail flag
 
 		return world.failFlag()
