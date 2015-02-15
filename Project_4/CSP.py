@@ -16,25 +16,23 @@ class CSP:
 	def backtrack(self, w):
 		world = deepcopy(w)
 		if world.isComplete():
-			print "Im Complete"
 			return world
 
 		var = world.selectUnassignedVariable()
 
-		print "******************************"
-		print var
-		#print world.orderDomainValues(var)
-		#print w.assignment
-		for value in world.orderDomainValues(var):
+		for value in world.orderDomainValues():
 			world.addAssignment(var, value)
-			#print w.assignment
+			inferences = w.inference(var, value) # Forward Checking
+
+			for iVar,iValue in inferences:
+				world.addAssignment(iVar, iValue)
 			if world.isValid():
-				print "Is valid"
 				result = self.backtrack(world)
 				if result.isValid():
-					print "Result Valid"
 					return result
-			world.removeAssignment(var)
 
-		print "Failed!"
+			world.removeAssignment(var)
+			for iVar,iValue in inferences:
+				world.removeAssignment(iVar, iValue)
+
 		return world.failFlag()

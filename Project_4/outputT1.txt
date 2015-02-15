@@ -1,4 +1,19 @@
-2015-02-14 21:28:31.500592
+2015-02-14 23:00:34.879428
+
+q G 
+Number of Items: 1
+Total Weight: 10/10
+Waster Capacity: 0
+
+r I 
+Number of Items: 1
+Total Weight: 55/55
+Waster Capacity: 0
+
+u K 
+Number of Items: 1
+Total Weight: 5/5
+Waster Capacity: 0
 
 y A C B 
 Number of Items: 3

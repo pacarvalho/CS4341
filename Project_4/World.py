@@ -3,6 +3,8 @@
 # of the world. Contains methods for detecting consistencies
 # etc.
 
+import operator
+
 class World:
 	var = {} # Dictionary of Variable names and value ITEMS!!!
 	value = {} # Dictionary of values BAGS!!!!
@@ -22,6 +24,11 @@ class World:
 	binWeightE = 5 # Weight for a Binary Constraint when Counting
 	binWeightNE = 5 # Weight for a Binary Constraint when Counting
 	binWeightS = 5 # Weight for a Binary Constraint when Counting
+
+	###### TESTING CONDITION!!
+	leastConstrainingValue = True
+	MinimumRemainingValue = True
+	forwardChecking = True
 
 	# Constructor
 	def __init__(self, capacity):
@@ -236,6 +243,7 @@ class World:
 		return unassigned
 
 	# Returns a list with the unfilled bag
+	# Basically: Checks for Max Capacity Constraint
 	def findUnassignedValue(self):
 		if not self.assignment.keys(): # If nothing is assigned
 			return self.value.keys()
@@ -257,8 +265,8 @@ class World:
 
 
 	# Count Constraints per Variables
-	# Returns dictionary of var and constraints
-	def countConstraints(self):
+	# Returns dictionary of var and num constraints
+	def countVarConstraints(self):
 		count = {}
 		for var in self.var:
 			tempCount = 0
@@ -275,13 +283,53 @@ class World:
 			count[var] = tempCount
 		return count
 
+	# Counts Constraints per Value
+	# Returns dicionary of values and num constraints
+	def countValueConstraints(self):
+		count = {}
+		for value in self.value:
+			tempCount = 0
+			if value in self.unaryI.values():
+				for instance in self.unaryI.values():
+					if instance is value:
+						tempCount -= 1
+
+			if value in self.unaryE.values():
+				for instance in self.unaryI.values():
+					if instance is value:
+						tempCount += 1
+
+			if value in self.assignment.values():
+				for var in self.assignment.keys():
+					if var in self.binE:
+						if self.assignment[var] is value:
+							if self.binE[var] not in self.assignment:
+								tempCount += 1
+
+					if var in self.binNE:
+						if self.assignment[var] is value:
+							if self.binNE[var] not in self.assignment:
+								tempCount += 1
+
+			# TODO: Add BinS Constraint
+
+			count[value] = tempCount
+
+		return count
+
+
 	# Selects the next variables to expand
+	# MINIMUM REMAINING VALUE
 	def selectUnassignedVariable(self):
+		unassigned = self.findUnassignedVar()
+
+		if not self.MinimumRemainingValue: # Bypass for Testing
+			return unassigned.keys()[0]
+
 		tempMaxVar = 0
 		tempMaxCount = -1
 
-		unassigned = self.findUnassignedVar()
-		constraints = self.countConstraints()
+		constraints = self.countVarConstraints()
 
 		for var in unassigned:
 			if constraints[var] >= tempMaxCount:
@@ -291,10 +339,27 @@ class World:
 		return tempMaxVar # Return Variables with Most Constraints
 
 	# Returns the next value to use
-	def orderDomainValues(self, var):
+	# LEAST CONSTRAINING VALUE!!!
+	def orderDomainValues(self):
 		unassigned = self.findUnassignedValue()
 
-		return unassigned
+		if not self.leastConstrainingValue: # Bypass for Testing
+			return unassigned
+
+		constraints = self.countValueConstraints()
+		order = []
+
+		sortedConstraints = sorted(constraints.items(), key=operator.itemgetter(1))	
+
+		for value in sortedConstraints:
+			if value[0] in unassigned:
+				order += value[0]
+
+		return order
+
+	# Forward Checking
+	def inference(self, var, value):
+		return []
 
 
 
