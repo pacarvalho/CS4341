@@ -78,7 +78,7 @@ class World:
 	###### Higher Level Checking
 	# Returns if the world is valid. Fulffils all constraints
 	def isValid(self):
-		
+		'''
 		print "All Checks:"
 		print "L Bot: " + str(self.checkBottomLimit())
 		print "L Top: " + str(self.checkTopLimit())
@@ -89,7 +89,7 @@ class World:
 		print "BinS: " + str(self.checkBinS())
 		print "Max: " + str(self.checkMaxCapacity())
 		print "Min: " + str(self.checkMinCapacity())
-		print "Flag: " + str(self.fFlag)
+		print "Flag: " + str(self.fFlag)'''
 
 		return self.checkTopLimit() and self.checkUnaryI() and \
 			self.checkUnaryE() and self.checkBinE() and \
@@ -242,14 +242,17 @@ class World:
 
 		unassigned = []
 
-		lightestWeight = min(self.var.values())
-
 		cap = self.calcUsedCapacity()
 
+		minWeight = min(self.var.values())
+
 		for value in self.value:
-			if value in cap.keys():
-				if cap[value] < self.value[value] - lightestWeight:
-					unassigned += [value]
+			if value in cap:
+				if cap[value] <= self.value[value] - minWeight:
+					unassigned += value
+			else:
+				unassigned += value
+
 		return unassigned
 
 

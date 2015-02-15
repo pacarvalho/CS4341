@@ -23,11 +23,11 @@ class CSP:
 
 		print "******************************"
 		print var
-		print world.orderDomainValues(var)
-		print w.assignment
+		#print world.orderDomainValues(var)
+		#print w.assignment
 		for value in world.orderDomainValues(var):
 			world.addAssignment(var, value)
-			print w.assignment
+			#print w.assignment
 			if world.isValid():
 				print "Is valid"
 				result = self.backtrack(world)
