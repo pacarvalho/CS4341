@@ -12,9 +12,10 @@ import sys
 # Get User Input from Terminal
 inputFileName = sys.argv[1]
 outputFileName = sys.argv[2]
+minCapacityConstraint = sys.argv[3]
 
 # Create Classes
-world = World(90)
+world = World(minCapacityConstraint)
 csp = CSP()
 
 # Read the input file
@@ -23,6 +24,12 @@ parser.read()
 
 # PERFORM CSP CALCULATION!!!
 result = csp.backtrackSearch(world)
+
+# Print Fail or Pass
+if not result.isComplete():
+	print "Assignment not possible..."
+else:
+	print "Finished Assignment!"
 
 # Print Final Result
 printer = Printer(outputFileName)

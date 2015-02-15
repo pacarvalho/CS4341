@@ -104,7 +104,8 @@ class World:
 			self.checkMaxCapacity() and not self.fFlag
 
 	def isComplete(self):
-		return self.isValid() and self.checkMinCapacity()
+		return self.isValid() and self.checkMinCapacity() and \
+			self.checkBottomLimit()
 
 	# Calculates the weight of var current in value
 	def calcUsedCapacity(self):
@@ -127,7 +128,7 @@ class World:
 		cap = self.calcUsedCapacity()
 
 		for value in cap:
-			if cap[value] < self.capacity*self.value[value]/100:
+			if cap[value]*100 < self.capacity*self.value[value]:
 				return False
 		return True
 
@@ -144,18 +145,22 @@ class World:
 				return False
 		return True
 
+	# Counts number of variables that have each value
+	# Items in bag!
+	def countVarPerValue(self):
+		count = {}
+
+		for value in self.value:
+			count[value] = 0
+
+		for value in self.assignment.values():
+			count[value] += 1
+
+		return count
+
 	# Checks if the limits have been obeyed
 	def checkTopLimit(self):
-		check = {}
-
-		if not self.assignment.keys(): # If empty
-			return True
-
-		for var in self.assignment:
-			if self.assignment[var] in check:
-				check[self.assignment[var]] += 1
-			else:
-				check[self.assignment[var]] = 1
+		check = self.countVarPerValue()
 
 		if max(check.values()) > self.limits[1]:
 			return False
@@ -163,19 +168,7 @@ class World:
 
 	# Checks if the bottom limit has been obeyed
 	def checkBottomLimit(self):
-		check = {}
-
-		if not self.assignment.keys(): # If empty
-			return False
-
-		for var in self.assignment:
-			if self.assignment[var] in check:
-				check[self.assignment[var]] += 1
-			else:
-				check[self.assignment[var]] = 1
-
-		if len(check.values()) is not len(self.value.keys()):
-			return False # A bag has remained unassigned!
+		check = self.countVarPerValue()
 
 		if min(check.values()) < self.limits[0]:
 			return False
@@ -359,7 +352,7 @@ class World:
 
 	# Forward Checking
 	def inference(self, var, value):
-		return []
+		return [] # TODO
 
 
 

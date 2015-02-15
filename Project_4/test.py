@@ -22,6 +22,9 @@ w.addBinE('A', 'B')
 w.addBinNE('C', 'D')
 w.addBinS('A','E','r','s')
 
+# Set Limits
+w.limits = [1,3]
+
 # Add Assignments and Test as we go
 # When Empty
 assert w.checkUnaryI(), 'UnaryI Fail when empty'
@@ -58,6 +61,8 @@ w.addAssignment('E', 's')
 assert not w.checkBinE(), 'BinE Did not Fail at Conflicting Round'
 assert not w.checkBinNE(), 'BinNE Did not Fail at Conflicting Round'
 assert not w.checkBinS(), 'BinS Did not Fail at Conflicting Round'
+assert w.checkBottomLimit(), 'Bottom Limit not Fulffiled'
+assert w.checkTopLimit(), 'Top Limit Exceeded'
 
 
 
