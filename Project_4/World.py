@@ -15,6 +15,7 @@ class World:
 	binNE = {} # Binary NOT Equals Constraints
 	binS = {} # Binary Simultaneuous NOT
 	capacity = 0 # Minimum filling of the bag
+	overallCapacity = 0 # Limit on Min Overall Capacity
 
 	assignment = {} # Assignment Dictionary ITEM IS KEY
 
@@ -31,8 +32,9 @@ class World:
 	forwardChecking = True
 
 	# Constructor
-	def __init__(self, capacity):
+	def __init__(self, capacity, overallCapacity=30):
 		self.capacity = capacity
+		self.overallCapacity = overallCapacity
 
 	#######################################################
 	################### Adder Methods #####################
@@ -100,8 +102,8 @@ class World:
 		print "BinS: " + str(self.checkBinS())
 		print "Max: " + str(self.checkMaxCapacity())
 		print "Min: " + str(self.checkMinCapacity())
-		print "Flag: " + str(self.fFlag)'''
-
+		print "Flag: " + str(self.fFlag)
+		'''
 		return self.checkTopLimit() and self.checkUnaryI() and \
 			self.checkUnaryE() and self.checkBinE() and \
 			self.checkBinNE() and self.checkBinS() and \
@@ -109,12 +111,16 @@ class World:
 
 	def isComplete(self):
 		return self.isValid() and self.checkMinCapacity() and \
-			self.checkBottomLimit()
+			self.checkBottomLimit() and self.checkMinOverall()
 
 	# Returns an integer value of the unused capacity
 	def calcTotalUnusedCapacity(self):
-		totalCapacity = sum(self.value.values())
+		totalCapacity = self.calcTotalCapacity()
 		return totalCapacity-sum(self.calcUsedCapacity().values())
+
+	# Returns the total capacity of all values
+	def calcTotalCapacity(self):
+		return sum(self.value.values())
 
 	# Calculates the weight of var current in value
 	def calcUsedCapacity(self):
@@ -129,6 +135,11 @@ class World:
 		return cap
 
 	###### Individual Checking
+	def checkMinOverall(self):
+		if self.overallCapacity * self.calcTotalCapacity() < sum(self.calcUsedCapacity().values()) * 100:
+			return True
+		return False
+
 	# Check that the bags have the minimum filling required
 	def checkMinCapacity(self):
 		if not self.assignment.keys():
@@ -204,7 +215,7 @@ class World:
 		for var in self.binE:
 			if var in self.assignment.keys():
 				if self.binE[var] in self.assignment.keys():
-					if self.assignment[var] is not \
+					if self.assignment[var] != \
 							self.assignment[self.binE[var]]:
 						return False
 		return True
@@ -215,7 +226,7 @@ class World:
 		for var in self.binNE:
 			if var in self.assignment.keys():
 				if self.binNE[var] in self.assignment.keys():
-					if self.assignment[var] is \
+					if self.assignment[var] == \
 							self.assignment[self.binNE[var]]:
 						return False
 		return True
@@ -225,10 +236,10 @@ class World:
 		for var in self.binS:
 			if var in self.assignment.keys():
 				if self.binS[var][0] in self.assignment.keys():
-					if (self.assignment[var] is self.binS[var][1] and \
-							self.assignment[self.binS[var][0]] is self.binS[var][2]) or \
-							(self.assignment[var] is self.binS[var][2] and \
-							self.assignment[self.binS[var][0]] is self.binS[var][1]):
+					if (self.assignment[var] == self.binS[var][1] and \
+							self.assignment[self.binS[var][0]] == self.binS[var][2]) or \
+							(self.assignment[var] == self.binS[var][2] and \
+							self.assignment[self.binS[var][0]] == self.binS[var][1]):
 						return False 
 		return True
 
@@ -241,7 +252,7 @@ class World:
 		unassigned = []
 		for var in self.var:
 			if var not in self.assignment.keys():
-				unassigned += var
+				unassigned += [var]
 		return unassigned
 
 	# Returns a list with the unfilled bag
@@ -307,23 +318,23 @@ class World:
 			tempCount = 0
 			if value in self.unaryI.values():
 				for instance in self.unaryI.values():
-					if instance is value:
+					if instance == value:
 						tempCount += KWeight
 
 			if value in self.unaryE.values():
 				for instance in self.unaryI.values():
-					if instance is value:
+					if instance == value:
 						tempCount += KWeight
 
 			if value in self.assignment.values():
 				for var in self.assignment.keys():
 					if var in self.binE:
-						if self.assignment[var] is value:
+						if self.assignment[var] == value:
 							if self.binE[var] not in self.assignment:
 								tempCount += KWeight
 
 					if var in self.binNE:
-						if self.assignment[var] is value:
+						if self.assignment[var] == value:
 							if self.binNE[var] not in self.assignment:
 								tempCount += KWeight
 
@@ -347,7 +358,7 @@ class World:
 			return unassigned[0]
 
 		tempMaxVar = -float('infinity')
-		tempMaxCount = -1
+		tempMaxCount = -float('infinity')
 
 		constraints = self.countVarConstraints()
 
