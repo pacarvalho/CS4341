@@ -1,0 +1,27 @@
+****************** - Iteration: 1
+Assignment: {}
+****************** - Iteration: 2
+Assignment: {'L': 'q'}
+****************** - Iteration: 3
+Assignment: {'J': 'q', 'L': 'q'}
+****************** - Iteration: 4
+Assignment: {'K': 'p', 'J': 'q', 'L': 'q'}
+****************** - Iteration: 5
+Assignment: {'H': 'p', 'K': 'p', 'J': 'q', 'L': 'q'}
+****************** - Iteration: 6
+Assignment: {'I': 'q', 'H': 'p', 'K': 'p', 'J': 'q', 'L': 'q'}
+****************** - Iteration: 7
+Assignment: {'F': 'p', 'I': 'q', 'H': 'p', 'K': 'p', 'J': 'q', 'L': 'q'}
+****************** - Iteration: 8
+Assignment: {'G': 'q', 'F': 'p', 'I': 'q', 'H': 'p', 'K': 'p', 'J': 'q', 'L': 'q'}
+****************** - Iteration: 9
+Assignment: {'D': 'p', 'G': 'q', 'F': 'p', 'I': 'q', 'H': 'p', 'K': 'p', 'J': 'q', 'L': 'q'}
+****************** - Iteration: 10
+Assignment: {'E': 'p', 'D': 'p', 'G': 'q', 'F': 'p', 'I': 'q', 'H': 'p', 'K': 'p', 'J': 'q', 'L': 'q'}
+****************** - Iteration: 11
+Assignment: {'E': 'q', 'D': 'p', 'G': 'q', 'F': 'p', 'I': 'q', 'H': 'p', 'K': 'p', 'J': 'q', 'L': 'q'}
+****************** - Iteration: 12
+Assignment: {'C': 'p', 'E': 'q', 'D': 'p', 'G': 'q', 'F': 'p', 'I': 'q', 'H': 'p', 'K': 'p', 'J': 'q', 'L': 'q'}
+********************************
+********* FINAL RESULT *********
+********************************

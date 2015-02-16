@@ -399,7 +399,7 @@ class World:
 			inferences += [(self.binE[var], value)]
 		if var in self.binE.values():
 			for var2 in self.binE:
-				if self.binE[var2] is var:
+				if self.binE[var2] == var:
 					inferences += [(var2, value)]
 
 		return inferences

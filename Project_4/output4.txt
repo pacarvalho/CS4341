@@ -1,0 +1,12 @@
+2015-02-16 13:42:47.623418
+
+q E G I J L 
+Number of Items: 5
+Total Weight: 55/55
+Waster Capacity: 0
+
+p C D F H K 
+Number of Items: 5
+Total Weight: 33/40
+Waster Capacity: 7
+
