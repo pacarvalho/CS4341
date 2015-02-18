@@ -46,6 +46,10 @@ class Parser:
 			elif section == 8: # Simultaneous Exclusion
 				self.world.addBinS(line[0],line[2], line[1], line[3])
 
+		# Account for case in which limits are not given!!
+		if not self.world.limits:
+			self.world.limits = [0, len(self.world.var)]
+
 
 
 
