@@ -337,7 +337,15 @@ class ParticleFilter(InferenceModule):
         a belief distribution.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        tempParticles = []
+        for p in self.particleList:
+            newPosDist = self.getPositionDistribution(self.setGhostPosition(gameState, p))
+            tempParticles += [util.sample(newPosDist)]
+
+        self.particleList = tempParticles
+
+
 
     def getBeliefDistribution(self):
         """
@@ -429,6 +437,14 @@ class JointParticleFilter:
         """
         "*** YOUR CODE HERE ***"
 
+        tempParticles = []
+        particlePerPosition = self.numParticles / len(self.legalPositions)
+        for p in self.legalPositions:
+            tempParticles += [tuple([p] * self.numGhosts)]
+
+        self.particleList = tempParticles
+
+
     def addGhostAgent(self, agent):
         """
         Each ghost agent is registered separately and stored (in case they are
@@ -475,6 +491,48 @@ class JointParticleFilter:
         emissionModels = [busters.getObservationDistribution(dist) for dist in noisyDistances]
 
         "*** YOUR CODE HERE ***"
+
+        # Let us go through each ghost and perform action to all its elements
+        newParticles = {}
+        for ghost in range(self.numGhosts): # Place in jail!
+            if noisyDistances[ghost] == None:
+                newParticles[ghost] = [self.getJailPosition(ghost)] * self.numParticles
+
+        # Create a weight distribution for each one of the ghosts. We will combine them
+        # later.
+        particleWeight = {}
+        for ghost in range(self.numGhosts):
+            if noisyDistances[ghost] != None:
+                tempParticleWeight = []
+                for atom in self.particleList:
+                    dist = util.manhattanDistance(pacmanPosition, atom[ghost])
+                    tempParticleWeight += [emissionModels[ghost][dist]]
+                particleWeight[ghost] = tempParticleWeight
+            else:
+                particleWeight[ghost] = None
+
+        # Combine all into the required format
+        tempList = []
+        flag = True
+        for ghost in range(self.numGhosts):
+            if particleWeight[ghost] != None:
+                if sum(particleWeight[ghost]) != 0:
+                    ghostParticles = [a[ghost] for a in self.particleList]
+                    newParticles[ghost] = util.nSample(particleWeight[ghost], ghostParticles, self.numParticles)
+                else:
+                    particlePerPosition = self.numParticles / len(self.legalPositions)
+                    newParticles[ghost] = [p for p in self.legalPositions] * particlePerPosition
+            
+            for i in range(self.numParticles):
+                if flag:
+                    tempList += [[newParticles[ghost][i]]]
+                else:
+                    tempList[i] += [newParticles[ghost][i]]
+            flag = False
+
+        tempList = [tuple(a) for a in tempList]
+        self.particleList = tempList
+
 
     def getParticleWithGhostInJail(self, particle, ghostIndex):
         """
@@ -542,7 +600,13 @@ class JointParticleFilter:
 
     def getBeliefDistribution(self):
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
+        beliefs = util.Counter()
+        for atom in self.particleList:
+            beliefs[atom] += 1.0
+
+        beliefs.normalize()
+        return beliefs
 
 # One JointInference module is shared globally across instances of MarginalInference
 jointInference = JointParticleFilter()
