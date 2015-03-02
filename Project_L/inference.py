@@ -264,6 +264,14 @@ class ParticleFilter(InferenceModule):
         """
         "*** YOUR CODE HERE ***"
 
+        particleList = []
+        particlePerPosition = self.numParticles / len(self.legalPositions)
+        for p in self.legalPositions:
+            particleList += [p]*particlePerPosition
+
+        # Initialized Particles List
+        self.particleList = particleList
+
     def observe(self, observation, gameState):
         """
         Update beliefs based on the given distance observation. Make sure to
@@ -295,7 +303,24 @@ class ParticleFilter(InferenceModule):
         emissionModel = busters.getObservationDistribution(noisyDistance)
         pacmanPosition = gameState.getPacmanPosition()
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        
+        if noisyDistance == None: # Ghost is in prison
+            self.particleList = [self.getJailPosition()] * self.numParticles
+            
+        else:
+            # Calculate Weights
+            particleWeight = []
+            for atom in self.particleList:
+                dist = util.manhattanDistance(pacmanPosition, atom)
+                particleWeight += [emissionModel[dist]]
+            
+            if sum(particleWeight) == 0: # All particles have 0 weight! BAD!
+                self.initializeUniformly(gameState)
+
+            else:
+                # Resample
+                self.particleList = util.nSample(particleWeight, self.particleList, self.numParticles)
+
 
     def elapseTime(self, gameState):
         """
@@ -322,7 +347,15 @@ class ParticleFilter(InferenceModule):
         Counter object)
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        
+        # We will count the number of particles at each location and then normalize
+        # that to yield the final distribution
+        beliefs = util.Counter()
+        for atom in self.particleList:
+            beliefs[atom] += 1.0
+
+        beliefs.normalize()
+        return beliefs
 
 class MarginalInference(InferenceModule):
     """
