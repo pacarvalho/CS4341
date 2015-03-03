@@ -437,15 +437,14 @@ class JointParticleFilter:
         """
         "*** YOUR CODE HERE ***"
 
-        # CORRECT PROCEDURE SHOULD CREATE TUPLES WHOSE LENGTH ARE THE NUMBER OF GHOSTS
-        # BUT COMPOSED OF ALL DIFFERENT 
+        # Create list all possible variations of the tuples.
         count = 0
         tempList = []
         while count < self.numParticles:
             for collection in itertools.permutations(self.legalPositions, r=self.numGhosts):
                 count += 1
                 tempList += [collection]
-                if count == self.numParticles:
+                if count == self.numParticles: # Ensures we don't go over
                     break
 
         self.particleList = tempList
@@ -580,6 +579,8 @@ class JointParticleFilter:
             # now loop through and update each entry in newParticle...
 
             "*** YOUR CODE HERE ***"
+
+            # Basically what we are told to do above
             tempParticle = []
             for i in range(self.numGhosts):
                 tempParticle += [util.sample(getPositionDistributionForGhost(
