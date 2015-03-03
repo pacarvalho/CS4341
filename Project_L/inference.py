@@ -437,13 +437,18 @@ class JointParticleFilter:
         """
         "*** YOUR CODE HERE ***"
 
-        tempParticles = []
-        particlePerPosition = self.numParticles / len(self.legalPositions)
-        for p in self.legalPositions:
-            tempParticles += [tuple([p] * self.numGhosts)]
+        # CORRECT PROCEDURE SHOULD CREATE TUPLES WHOSE LENGTH ARE THE NUMBER OF GHOSTS
+        # BUT COMPOSED OF ALL DIFFERENT 
+        count = 0
+        tempList = []
+        while count < self.numParticles:
+            for collection in itertools.permutations(self.legalPositions, r=self.numGhosts):
+                count += 1
+                tempList += [collection]
+                if count == self.numParticles:
+                    break
 
-        self.particleList = tempParticles
-
+        self.particleList = tempList
 
     def addGhostAgent(self, agent):
         """
@@ -492,47 +497,29 @@ class JointParticleFilter:
 
         "*** YOUR CODE HERE ***"
 
-        # Let us go through each ghost and perform action to all its elements
-        newParticles = {}
-        for ghost in range(self.numGhosts): # Place in jail!
-            if noisyDistances[ghost] == None:
-                newParticles[ghost] = [self.getJailPosition(ghost)] * self.numParticles
-
-        # Create a weight distribution for each one of the ghosts. We will combine them
-        # later.
-        particleWeight = {}
-        for ghost in range(self.numGhosts):
-            if noisyDistances[ghost] != None:
-                tempParticleWeight = []
-                for atom in self.particleList:
-                    dist = util.manhattanDistance(pacmanPosition, atom[ghost])
-                    tempParticleWeight += [emissionModels[ghost][dist]]
-                particleWeight[ghost] = tempParticleWeight
-            else:
-                particleWeight[ghost] = None
-
-        # Combine all into the required format
         tempList = []
-        flag = True
         for ghost in range(self.numGhosts):
-            if particleWeight[ghost] != None:
-                if sum(particleWeight[ghost]) != 0:
-                    ghostParticles = [a[ghost] for a in self.particleList]
-                    newParticles[ghost] = util.nSample(particleWeight[ghost], ghostParticles, self.numParticles)
-                else:
-                    particlePerPosition = self.numParticles / len(self.legalPositions)
-                    newParticles[ghost] = [p for p in self.legalPositions] * particlePerPosition
+            if noisyDistances[ghost] == None: # SPECIAL CASEL: Ghost in jail
+                tempList += [[self.getJailPosition(ghost)] * self.numParticles]
             
-            for i in range(self.numParticles):
-                if flag:
-                    tempList += [[newParticles[ghost][i]]]
-                else:
-                    tempList[i] += [newParticles[ghost][i]]
-            flag = False
+            else:
+                tempWeight = []
+                for p in self.particleList:
+                    dist = util.manhattanDistance(pacmanPosition, p[ghost])
+                    tempWeight += [emissionModels[ghost][dist]]
+                if sum(tempWeight) != 0:
+                    ghostParticles = [a[ghost] for a in self.particleList]
+                    tempList += [util.nSample(tempWeight, ghostParticles, self.numParticles)]
+                
+                else: # SPECIAL CASE: All weights are 0
+                    self.initializeParticles()
+                    tempList += [[a[ghost] for a in self.particleList]]
 
-        tempList = [tuple(a) for a in tempList]
-        self.particleList = tempList
+        # Convert to Required Format ONLY WORKS FOR TWO GHOSTS!!!
+        finalList = [tuple([tempList[j][i] for j in range(self.numGhosts)]) for i in range(self.numParticles)]
 
+        # Return
+        self.particleList = finalList
 
     def getParticleWithGhostInJail(self, particle, ghostIndex):
         """
@@ -596,7 +583,7 @@ class JointParticleFilter:
 
             "*** END YOUR CODE HERE ***"
             newParticles.append(tuple(newParticle))
-        self.particles = newParticles
+        self.particleList = newParticles
 
     def getBeliefDistribution(self):
         "*** YOUR CODE HERE ***"
